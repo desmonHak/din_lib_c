@@ -16,6 +16,12 @@ int main() {
         fprintf(stderr, "No se pudo cargar la SO: %s\n", error);
         return 1;
     }
+    din_lib mylib1 = load_lib("./mylib1");
+    if (!handle) {
+        get_error_lib(error);
+        fprintf(stderr, "No se pudo cargar la SO: %s\n", error);
+        return 1;
+    }
 
     get_error_lib(error); // Limpiar errores previos
     printf("./mylib" EXT_LIB " se cargo correctamente.\n");
@@ -62,7 +68,7 @@ int main() {
     } else {
         printf("No se pudo obtener mi_variable_global: %s\n", error);
     }
-
+    close_lib(mylib1);
     close_lib(handle);
     return 0;
 }
