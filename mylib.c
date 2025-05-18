@@ -11,7 +11,7 @@ static inline void os_destructor(void) {
     puts("hola desde el destructor  de mylib"); 
 }
 
-void register_os_init(void) {
+void register_init(void) {
     constructor = os_constructor;
     destructor = os_destructor;
 }
