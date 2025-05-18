@@ -1,67 +1,62 @@
+LIBS = mylib mylib1
+EXE_NAME = main
+
 ifeq ($(OS),Windows_NT)
     OS_NAME := windows
 else
     UNAME_S := $(shell uname -s)
-
     ifeq ($(UNAME_S),Linux)
         OS_NAME := linux
     endif
-
     ifeq ($(UNAME_S),Darwin)
         OS_NAME := macos
     endif
 endif
 
-
-# lugar donde buscar el .so
-SEARCH_DIR_LIB = .
-
 ifeq ($(OS_NAME),windows)
-	EXTENSION_LIB	= dll
-	EXTENSION_EXEC	= exe
-	CFLAGS			= -Wall -O2
-	RM				= del /Q
-
-	CFLAGS_EXEC		= $(CFLAGS)
+    EXTENSION_LIB  = dll
+    EXTENSION_EXEC = exe
+    CFLAGS         = -Wall -O2
+    RM             = del /Q
+    CFLAGS_EXEC    = $(CFLAGS)
+    DLL_EXPORT_MACRO = -DBUILDING_DLL
 else
-	EXTENSION_LIB	= so
-	EXTENSION_EXEC	= elf
-	CFLAGS			= -Wall -O2 -fPIC
-	RM				= rm -rf
-
-	CFLAGS_EXEC		= $(CFLAGS) -ldl -Wl,-rpath=$(SEARCH_DIR_LIB)
+    EXTENSION_LIB  = so
+    EXTENSION_EXEC = elf
+    CFLAGS         = -Wall -O2 -fPIC
+    RM             = rm -rf
+    CFLAGS_EXEC    = $(CFLAGS) -ldl -Wl,-rpath=.
+    DLL_EXPORT_MACRO = -DBUILDING_DLL
 endif
 
 CC = gcc
 
-
-# Para compilar DLL: define BUILDING_MYLIB para exportar símbolos
-DLL_NAME = mylib.$(EXTENSION_LIB)
-DLL_OBJS = mylib.o
-
-# Ejecutable que usa la DLL cargándola en runtime
-EXE_NAME = main.$(EXTENSION_EXEC)
-EXE_OBJS = main.o
-
-
+# Genera nombres de archivos automáticamente
+DLL_NAMES = $(foreach lib,$(LIBS),$(lib).$(EXTENSION_LIB))
+DLL_OBJS  = $(foreach lib,$(LIBS),$(lib).o)
+EXE_FILE  = $(EXE_NAME).$(EXTENSION_EXEC)
+EXE_OBJS  = $(EXE_NAME).o
 
 .PHONY: all clean
 
-all: $(DLL_NAME) $(EXE_NAME)
+all: $(DLL_NAMES) $(EXE_FILE)
 
-# Crear DLL
-$(DLL_NAME): $(DLL_OBJS)
+# Regla general para cada librería dinámica
+%.dll: %.o
 	$(CC) -shared -o $@ $^
 
-mylib.o: mylib.c mylib.h
-	$(CC) $(CFLAGS) -DBUILDING_MYLIB -c mylib.c
+%.so: %.o
+	$(CC) -shared -o $@ $^
 
-# Ejecutable ejemplo
-$(EXE_NAME): $(EXE_OBJS)
-	$(CC) $(CFLAGS_EXEC)  -o $@ $^
+%.o: %.c %.h
+	$(CC) $(CFLAGS) -DBUILDING_DIN_LYB -c $<
 
-main.o: main.c mylib.h
-	$(CC) $(CFLAGS) -c main.c
+# Ejecutable
+$(EXE_FILE): $(EXE_OBJS)
+	$(CC) $(CFLAGS_EXEC) -o $@ $^
+
+$(EXE_NAME).o: $(EXE_NAME).c $(addsuffix .h,$(LIBS))
+	$(CC) $(CFLAGS) -c $<
 
 clean:
 	$(RM) *.o *.$(EXTENSION_EXEC) *.$(EXTENSION_LIB)
