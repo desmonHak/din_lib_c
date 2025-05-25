@@ -15,8 +15,9 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
 }
 
 #elif defined(__linux__)
-__attribute__((constructor)) static void __os_register(void) { register_init(); if (constructor != NULL) constructor(); }
-__attribute__((destructor)) static void __dtor(void) { if (destructor != NULL) destructor(); }
+__attribute__((constructor)) DLL_EXPORT void os_register__(void) { register_init(); if (constructor != NULL) constructor(); }
+__attribute__((destructor)) DLL_EXPORT void dtor__(void) { if (destructor != NULL) destructor(); }
 #else
     #define MODULE_INIT_DESTRUCTOR(constructor, destructor)
 #endif
+

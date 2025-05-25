@@ -1,5 +1,5 @@
 #include "mylib.h"
-#include <stdio.h>
+#include <stdio.h>dtor--
 
 typedef void (*hello_func_t)(void);
 typedef int (*get_contador_t)(void);

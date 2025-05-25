@@ -34,6 +34,6 @@
 #else
     #define DLL_EXPORT
 #endif
-
+typedef void (*destructor_t)(void);
 
 #endif
