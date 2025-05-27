@@ -1,5 +1,7 @@
 #include "din_lib_c.h"
 
+#include <stdlib.h>
+
 static void (*constructor) (void) = NULL;
 static void (*destructor) (void) = NULL;
 
