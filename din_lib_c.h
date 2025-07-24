@@ -8,6 +8,7 @@
     typedef HMODULE din_lib;
 
     #define EXT_LIB ".dll"
+    #define load_lib_route(name)            LoadLibraryA(name)
     #define load_lib(name)                  LoadLibraryA(name EXT_LIB)
     #define get_error_lib(name)             (void)name
     #define load_simbol(handle, name)       GetProcAddress(handle, name)
@@ -25,6 +26,7 @@
 
     typedef void * din_lib;
 
+    #define load_lib_route(name)            dlopen(name, RTLD_LAZY)
     #define load_lib(name)                  dlopen(name EXT_LIB, RTLD_LAZY)
     #define get_error_lib(name)             name = dlerror()
     #define load_simbol(handle, name)       dlsym(handle, name)
