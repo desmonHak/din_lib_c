@@ -21,5 +21,12 @@ __attribute__((constructor)) DLL_EXPORT void os_register__(void) { register_init
 __attribute__((destructor)) DLL_EXPORT void dtor__(void) { if (destructor != NULL) destructor(); }
 #else
     #define MODULE_INIT_DESTRUCTOR(constructor, destructor)
+
+    // estas funciones no tienen utilidad en windows, ya que no es necesario registrar
+    // las funciones de inicializacion y destruccion a traves de funciones especiales como estas
+    __attribute__((used)) DLL_EXPORT void os_register__(void) { }
+    __attribute__((used)) DLL_EXPORT void dtor__(void) {  }
+    void *force_link[] = { (void*)os_register__, (void*)dtor__ };
+
 #endif
 
